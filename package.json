@@ -1,0 +1,13 @@
+{
+  "name": "sjq-gyf-love",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "vercel-build": "cd frontend && npm install && npm run build"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongoose": "^8.4.3"
+  }
+}
