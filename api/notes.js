@@ -1,35 +1,7 @@
-import mongoose from "mongoose";
-
-const uri = process.env.MONGODB_URI;
-
-let conn = null;
-
-async function connectDB() {
-  if (conn) return conn;
-  conn = await mongoose.connect(uri, { dbName: "love" });
-  return conn;
-}
-
-const noteSchema = new mongoose.Schema({
-  name: String,
-  content: String,
-  date: { type: Date, default: Date.now }
-});
-
-const Note = mongoose.models.Note || mongoose.model("Note", noteSchema);
-
-export default async function handler(req, res) {
-  await connectDB();
-
-  if (req.method === "GET") {
-    const notes = await Note.find();
-    return res.status(200).json(notes);
-  }
-
-  if (req.method === "POST") {
-    const note = await Note.create(req.body);
-    return res.status(201).json(note);
-  }
-
-  res.status(405).json({ error: "Method Not Allowed" });
+// api/notes.js
+export default function handler(req, res) {
+  res.status(200).json([
+    { id: 1, title: "测试1", content: "你好，这是从后端返回的数据" },
+    { id: 2, title: "测试2", content: "如果能看到，说明 API 正常" },
+  ]);
 }
