@@ -2,12 +2,11 @@
   "name": "sjq-gyf-love",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "vercel-build": "cd frontend && npm install && npm run build"
+    "vercel-build": "echo 'Building for Vercel...'"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "mongoose": "^8.4.3"
+    "mongoose": "^8.6.0",
+    "cors": "^2.8.5"
   }
 }
