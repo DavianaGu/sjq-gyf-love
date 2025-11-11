@@ -1,28 +1,27 @@
-import { MongoClient } from "mongodb";
+import mongoose from "mongoose";
 
-const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri);
+const uri = "mongodb+srv://sjq:050828@cluster0.rxvv6g7.mongodb.net/?appName=Cluster0";
+
+const NoteSchema = new mongoose.Schema({
+  title: String,
+  content: String,
+});
+
+const Note = mongoose.models.Note || mongoose.model("Note", NoteSchema);
 
 export default async function handler(req, res) {
-  try {
-    await client.connect();
-    const db = client.db("love_db");
-    const collection = db.collection("notes");
+  await mongoose.connect(uri, { dbName: "sjqlove" });
 
-    if (req.method === "GET") {
-      const notes = await collection.find({}).toArray();
-      res.status(200).json(notes);
-    } else if (req.method === "POST") {
-      const body = JSON.parse(req.body);
-      const result = await collection.insertOne(body);
-      res.status(200).json({ insertedId: result.insertedId });
-    } else {
-      res.status(405).json({ message: "Method Not Allowed" });
-    }
-  } catch (err) {
-    console.error("API Error:", err);
-    res.status(500).json({ error: err.message });
-  } finally {
-    await client.close();
+  if (req.method === "GET") {
+    const notes = await Note.find();
+    return res.status(200).json(notes);
   }
+
+  if (req.method === "POST") {
+    const note = new Note(req.body);
+    await note.save();
+    return res.status(201).json(note);
+  }
+
+  return res.status(405).json({ error: "Method not allowed" });
 }
