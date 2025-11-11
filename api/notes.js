@@ -1,16 +1,25 @@
 import mongoose from "mongoose";
 
-const uri = "mongodb+srv://sjq:050828@cluster0.rxvv6g7.mongodb.net/?appName=Cluster0";
+const uri = process.env.MONGODB_URI;
 
-const NoteSchema = new mongoose.Schema({
-  title: String,
+let conn = null;
+
+async function connectDB() {
+  if (conn) return conn;
+  conn = await mongoose.connect(uri, { dbName: "love" });
+  return conn;
+}
+
+const noteSchema = new mongoose.Schema({
+  name: String,
   content: String,
+  date: { type: Date, default: Date.now }
 });
 
-const Note = mongoose.models.Note || mongoose.model("Note", NoteSchema);
+const Note = mongoose.models.Note || mongoose.model("Note", noteSchema);
 
 export default async function handler(req, res) {
-  await mongoose.connect(uri, { dbName: "sjqlove" });
+  await connectDB();
 
   if (req.method === "GET") {
     const notes = await Note.find();
@@ -18,10 +27,9 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const note = new Note(req.body);
-    await note.save();
+    const note = await Note.create(req.body);
     return res.status(201).json(note);
   }
 
-  return res.status(405).json({ error: "Method not allowed" });
+  res.status(405).json({ error: "Method Not Allowed" });
 }
